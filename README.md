@@ -16,7 +16,7 @@ The Script will output the Images files in the following structure:<br>
 /images/vehicle for the vehicles
 ```
 
-If you choose option ```-o zip``` or ```-o both``` then there will be a folder called ```zips``` with the following output:<br>
+If you choose the option ```-o zip``` or ```-o both``` then there will be a folder called ```zips``` with the following output:<br>
 ```
 /zips/ped.zip
 /zips/weapon.zip
@@ -24,7 +24,7 @@ If you choose option ```-o zip``` or ```-o both``` then there will be a folder c
 ```
 
 # Source
-You can choose between this sources:<br>
+You can choose between these sources:<br>
 | Source  | Vehicles           | Peds  | Weapons | type | maintained | link
 | ------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
 | alt:V (Docs) | :white_check_mark: | :white_check_mark: | :white_check_mark: | png | :white_check_mark: | https://docs.altv.mp
