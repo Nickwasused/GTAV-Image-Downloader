@@ -12,8 +12,8 @@ With this Script, you can download all Images for Vehicles, Weapons, and Peds fr
 | -o | fetch | fetch / zip / both
 | -r | alt:V | alt:V / alt:V2 / rage / fivem
 
-Examples:
-```python3 dump.py -o both -r rage```
+Examples:<br>
+```python3 dump.py -o both -r rage```<br>
 ```python3 dump.py -o fetch -r alt:V2```
 
 ## Output
