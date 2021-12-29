@@ -2,3 +2,7 @@
 /images/weapon
 /images/vehicle
 /zips
+/dist
+/build
+/__pycache__
+dump.spec
