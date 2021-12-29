@@ -34,11 +34,17 @@ If you choose the option ```-o zip``` or ```-o both``` then there will be a fold
 
 # Source
 You can choose between these sources:<br>
-| Source  | Vehicles           | Peds  | Weapons | type | maintained | link
-| ------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
-| alt:V (Docs) | :white_check_mark: | :white_check_mark: | :white_check_mark: | png | :white_check_mark: | https://docs.altv.mp
-| alt:V (Wiki) | :white_check_mark: | :white_check_mark: | :white_check_mark: | png | :x: | https://wiki.altv.mp
-| Rage | :white_check_mark: | :x: | :x: | png | :white_check_mark: | https://wiki.rage.mp
-| Fivem | :x: | :white_check_mark: | :x: | webp | :white_check_mark: | https://docs.fivem.net
+| Source  | Vehicles           | Peds  | Weapons | type | maintained | link | Downloader Type
+| ------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
+| alt:V (Docs) | :white_check_mark: | :white_check_mark: | :white_check_mark: | png | :white_check_mark: | https://docs.altv.mp | Docs
+| alt:V (Wiki) | :white_check_mark: | :white_check_mark: | :white_check_mark: | png | :x: | https://wiki.altv.mp | Wiki
+| Rage | :white_check_mark: | :x: | :x: | png | :white_check_mark: | https://wiki.rage.mp | Wiki
+| Fivem | :x: | :white_check_mark: | :x: | webp | :white_check_mark: | https://docs.fivem.net | Docs
 
 The Default is alt:V (Docs).
+
+# Downloader Types
+| Name  | Speed | Note | 
+| ------- | ------------------ | ------------------ |
+| Docs | Fast | 
+| Wiki | Slow | approximately 100x slower than Docs

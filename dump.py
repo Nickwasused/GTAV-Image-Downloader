@@ -68,11 +68,23 @@ def check_data(data, source_object, file_type):
     
     return return_array
 
+def download_file(download_object):
+    image_request = pool.request('GET', download_object["link"], preload_content=False)
+    with open(download_object["filename"], "wb") as image_file:
+        for chunk in image_request.stream(1024):
+            image_file.write(chunk)
+    image_request.release_conn()
+    return
+
 def getremoteimages_modern_docs(remote_url, special_flag, file_type):
+    from multiprocessing.pool import ThreadPool
+    from multiprocessing import cpu_count
     from json import loads
     from os.path import exists
 
     check_directories()
+
+    download_urls = []
 
     # download or skip
     for source_object in source:
@@ -84,7 +96,7 @@ def getremoteimages_modern_docs(remote_url, special_flag, file_type):
         data = loads(data_request.data.decode('utf-8'))
 
         filtered_data = check_data(data, source_object, file_type)
-
+        print("Found {} images for {}".format(len(filtered_data), source_object["object_type"]))
         for data_object in filtered_data:
             name = data_object["Name"].lower()
             if special_flag == "fivem":
@@ -93,15 +105,20 @@ def getremoteimages_modern_docs(remote_url, special_flag, file_type):
                 link = remote_url.format(source_object["object_type"], name, file_type)
             filename = "./images/{}/{}.{}".format(source_object["object_type"], name, file_type)
 
-            print("Downloading: {}:{}".format(source_object["object_type"], name))
-            image_request = pool.request('GET', link, preload_content=False)
-            with open(filename, "wb") as image_file:
-                for chunk in image_request.stream(1024):
-                    image_file.write(chunk)
+            download_urls.append({
+                "link": link,
+                "filename": filename
+            })
 
-            image_request.release_conn()
+    print("Downloading {} images".format(len(download_urls)))
+    results = ThreadPool(cpu_count()).imap_unordered(download_file, download_urls)
+    # do this or the images won´t be saved !
+    for r in results:
+        pass
 
 def getremoteimages_old_wiki(remote_url, base_remote_url, weapon_fetch_type, file_type):
+    from multiprocessing.pool import ThreadPool
+    from multiprocessing import cpu_count
     from os.path import exists
     from os import mkdir
     from re import compile
@@ -109,6 +126,8 @@ def getremoteimages_old_wiki(remote_url, base_remote_url, weapon_fetch_type, fil
     from bs4 import BeautifulSoup
 
     check_directories()
+
+    download_urls = []
 
     regexraw = r"\/images\/[0-9a-zA-Z_]{1,}\/[a-zA-Z0-9_]{2}\/.{1,}.png"
     regex = compile(regexraw)
@@ -118,13 +137,12 @@ def getremoteimages_old_wiki(remote_url, base_remote_url, weapon_fetch_type, fil
         data = loads(data_request.data.decode('utf-8'))
 
         filtered_data = check_data(data, source_object, file_type)
-
+        print("Found {} images for {}".format(len(filtered_data), source_object["object_type"]))
+        print("Using old methode. This is going to take a long time... Object-Type={}".format(source_object["object_type"]))
         for data_object in filtered_data:
             name = data_object["Name"].lower()
             filename = "./images/{}/{}.{}".format(source_object["object_type"], name, file_type)
 
-
-            print("Downloading: {}:{}".format(source_object["object_type"], name))
             if source_object["object_type"] == "weapon" and weapon_fetch_type == "alt:V":
                 link = remote_url.format(data_object["Name"].replace("WEAPON_", "").replace("_", "-").capitalize().replace("mk2", "Mk2") + "-icon")
             elif source_object["object_type"] == "weapon" and weapon_fetch_type == "rage" or source_object["object_type"] == "ped" and weapon_fetch_type == "rage":
@@ -141,12 +159,17 @@ def getremoteimages_old_wiki(remote_url, base_remote_url, weapon_fetch_type, fil
                 result = regex.match(link["href"])
                 if (result != None):
                     filelink = base_remote_url.format(link["href"])
-                    image_request = pool.request('GET', filelink, preload_content=False)
-                    with open(filename, "wb") as image_file:
-                        for chunk in image_request.stream(1024):
-                            image_file.write(chunk)
-                    image_request.release_conn()
+                    download_urls.append({
+                        "link": link,
+                        "filename": filename
+                    })
                     break
+
+    print("Downloading {} images".format(len(download_urls)))
+    results = ThreadPool(cpu_count()).imap_unordered(download_file, download_urls)
+    # do this or the images won´t be saved !
+    for r in results:
+        pass
 
 def zipimages():
     from os import mkdir, remove
