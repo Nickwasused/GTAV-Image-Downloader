@@ -56,6 +56,18 @@ def check_directories():
         if (exists(directory) == False):
             mkdir(directory)
 
+def check_data(data, source_object, file_type):
+    from os.path import exists
+    return_array = []
+    for data_object in data:
+        name = data_object["Name"].lower()
+        filename = "./images/{}/{}.{}".format(source_object["object_type"], name, file_type)
+
+        if (exists(filename) == False):
+            return_array.append(data_object)
+    
+    return return_array
+
 def getremoteimages_modern_docs(remote_url, special_flag, file_type):
     from json import loads
     from os.path import exists
@@ -71,7 +83,9 @@ def getremoteimages_modern_docs(remote_url, special_flag, file_type):
         data_request = pool.request('GET', source_object["link"])
         data = loads(data_request.data.decode('utf-8'))
 
-        for data_object in data:
+        filtered_data = check_data(data, source_object, file_type)
+
+        for data_object in filtered_data:
             name = data_object["Name"].lower()
             if special_flag == "fivem":
                 link = remote_url.format(source_object["object_type"] + "s", name, file_type)
@@ -79,17 +93,13 @@ def getremoteimages_modern_docs(remote_url, special_flag, file_type):
                 link = remote_url.format(source_object["object_type"], name, file_type)
             filename = "./images/{}/{}.{}".format(source_object["object_type"], name, file_type)
 
-            if (exists(filename)):
-                print("SKIPPING: {}:{}".format(source_object["object_type"], name))
-                continue
-            else:
-                print("Downloading: {}:{}".format(source_object["object_type"], name))
-                image_request = pool.request('GET', link, preload_content=False)
-                with open(filename, "wb") as image_file:
-                    for chunk in image_request.stream(1024):
-                        image_file.write(chunk)
+            print("Downloading: {}:{}".format(source_object["object_type"], name))
+            image_request = pool.request('GET', link, preload_content=False)
+            with open(filename, "wb") as image_file:
+                for chunk in image_request.stream(1024):
+                    image_file.write(chunk)
 
-                image_request.release_conn()
+            image_request.release_conn()
 
 def getremoteimages_old_wiki(remote_url, base_remote_url, weapon_fetch_type, file_type):
     from os.path import exists
@@ -107,37 +117,36 @@ def getremoteimages_old_wiki(remote_url, base_remote_url, weapon_fetch_type, fil
         data_request = pool.request('GET', source_object["link"])
         data = loads(data_request.data.decode('utf-8'))
 
-        for data_object in data:
+        filtered_data = check_data(data, source_object, file_type)
+
+        for data_object in filtered_data:
             name = data_object["Name"].lower()
             filename = "./images/{}/{}.{}".format(source_object["object_type"], name, file_type)
 
-            if (exists(filename)):
-                print("SKIPPING: {}:{}".format(source_object["object_type"], name))
-                continue
-            else:
-                print("Downloading: {}:{}".format(source_object["object_type"], name))
-                if source_object["object_type"] == "weapon" and weapon_fetch_type == "alt:V":
-                    link = remote_url.format(data_object["Name"].replace("WEAPON_", "").replace("_", "-").capitalize().replace("mk2", "Mk2") + "-icon")
-                elif source_object["object_type"] == "weapon" and weapon_fetch_type == "rage" or source_object["object_type"] == "ped" and weapon_fetch_type == "rage":
-                    print("Downloading Weapons from Rage is not supported!")
-                    break
-                else:
-                    link = remote_url.format(data_object["Name"].capitalize())
-                response = pool.request('GET', link)
-                decoded_html = response.data.decode("utf-8", errors='ignore')
-                soup = BeautifulSoup(decoded_html, 'html.parser')
-                links = soup.find_all("a", href=True)
 
-                for link in links:
-                    result = regex.match(link["href"])
-                    if (result != None):
-                        filelink = base_remote_url.format(link["href"])
-                        image_request = pool.request('GET', filelink, preload_content=False)
-                        with open(filename, "wb") as image_file:
-                            for chunk in image_request.stream(1024):
-                                image_file.write(chunk)
-                        image_request.release_conn()
-                        break
+            print("Downloading: {}:{}".format(source_object["object_type"], name))
+            if source_object["object_type"] == "weapon" and weapon_fetch_type == "alt:V":
+                link = remote_url.format(data_object["Name"].replace("WEAPON_", "").replace("_", "-").capitalize().replace("mk2", "Mk2") + "-icon")
+            elif source_object["object_type"] == "weapon" and weapon_fetch_type == "rage" or source_object["object_type"] == "ped" and weapon_fetch_type == "rage":
+                print("Downloading Weapons from Rage is not supported!")
+                break
+            else:
+                link = remote_url.format(data_object["Name"].capitalize())
+            response = pool.request('GET', link)
+            decoded_html = response.data.decode("utf-8", errors='ignore')
+            soup = BeautifulSoup(decoded_html, 'html.parser')
+            links = soup.find_all("a", href=True)
+
+            for link in links:
+                result = regex.match(link["href"])
+                if (result != None):
+                    filelink = base_remote_url.format(link["href"])
+                    image_request = pool.request('GET', filelink, preload_content=False)
+                    with open(filename, "wb") as image_file:
+                        for chunk in image_request.stream(1024):
+                            image_file.write(chunk)
+                    image_request.release_conn()
+                    break
 
 def zipimages():
     from os import mkdir, remove
