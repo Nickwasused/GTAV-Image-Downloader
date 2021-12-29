@@ -1,3 +1,2 @@
 beautifulsoup4==4.10.0
 urllib3==1.26.7
-~~llib3==1.25.9
