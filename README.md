@@ -7,6 +7,15 @@ With this Script, you can download all Images for Vehicles, Weapons, and Peds fr
 ```pip3 install -r requirements.txt```<br>
 ```python3 dump.py```
 
+| Option  | Default           | Other  
+| ------- | ------------------ | ------------------ 
+| -o | fetch | fetch / zip / both
+| -r | alt:V | alt:V / alt:V2 / rage / fivem
+
+Examples:<br>
+```python3 dump.py -o both -r rage```<br>
+```python3 dump.py -o fetch -r alt:V2```
+
 ## Output
 
 The Script will output the Images files in the following structure:<br>
