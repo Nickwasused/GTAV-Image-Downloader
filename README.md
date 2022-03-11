@@ -1,6 +1,7 @@
 # GTAV-Image-Downloader
 
 With this Script, you can download all Images for Vehicles, Weapons, and Peds from the alt:V Documentation.
+After creating the script I noticed you can download the images from here: https://github.com/altmp/altv-docs-assets/tree/master/altv-docs-gta/images
 
 # Usage
 
